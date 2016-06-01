@@ -66,7 +66,7 @@ do
     fi
 
 
-    # Generate the log file in the format
+    # Generate the access log file in the format
     ## time stamp|server|app name|app version|GET|url|status code|latency|referral
     echo `date`"|"$SERVER_NAME"|"$APP_NAME"|"$APP_VERSION"|GET|http://www.homepage.com/|"$x1"|"$status_code"|"$latency"|referral_url" >> accesslog-$SERVER_NAME-$APP_NAME-$APP_VERSION.log
 
