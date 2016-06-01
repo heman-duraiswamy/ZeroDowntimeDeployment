@@ -1,59 +1,70 @@
 #!/bin/bash
 
-rm sampleData.dat
 
-DT=`date`
 
-for userId in {1..400}
+if [ $# -ne 5 ]; then
+    echo "Invalid number of arguments."
+    echo "Usage ./generate_access_log_data.sh <server_name> <app_name> <app_version> <is_more_error?(0|1)> <is_slow?(0|1)>"
+    exit 1
+fi
+
+SERVER_NAME=$1
+APP_NAME=$2
+APP_VERSION=$3
+ERR_FLAG=0
+SLOW_FLAG=0
+SLEEP_DURATION=0.1
+
+temp0=`echo $4 | grep "^-\?[0-1]$"`
+if [ -z "$temp0" ]; then
+    ERR_FLAG=0
+else
+    ERR_FLAG=$temp0
+fi
+
+temp1=`echo $5 | grep "^-\?[0-1]$"`
+if [ -z "$temp1" ]; then
+    SLOW_FLAG=0
+else
+    SLOW_FLAG=$temp1
+fi
+
+while true
 do
-  for i in {1..2500}
-  do
-    #Generate date
-    ##Obtain random day within last 15 days
-    x1=`shuf -i 0-14 -n 1`
-    
-    ##Generate a user pattern of 10 hours. Keep it consistent for userId
-    userPatternFrom=$((userId%14))
-    userPatternEnd=$((userPatternFrom+10))
-    x12=`shuf -i $userPatternFrom-$userPatternEnd -n 1`
-
-    ##Calculate hour difference
-    x11=$(((x1*24)+x12))
-    
-    #NPI flag
-    x2=`shuf -i 1-15 -n 1`
-    npi=false
-    if [ $((x2%8)) -eq 0 ]
-    then
-      npi=true
-    fi
-    
-    #PII flag
-    x3=`shuf -i 9-28 -n 1`
-    pii=false
-    if [ $((x3%15)) -eq 0 ]
-    then
-      pii=true
-    fi
-    
-    #Change Password event
-    x4=`shuf -i 1-50 -n 1`
-    chpwd=null
-    if [ $((x4%26)) -eq 0 ]
-    then
-      chpwd=PASSWORDRESET
-      pii=false
-      npi=false
+    # Calculate status code
+    ## generate random number between 0 and 50 for normal state
+    ## generate random number between 1 and 20 for good state
+    if [ $ERR_FLAG -eq 0 ]; then 
+        x1=`gshuf -i 1-50 -n 1`
+    else
+        x1=`gshuf -i 1-20 -n 1`
     fi
 
-    #Write data to file
-    echo `date '+%Y-%m-%d %H:%M:%S' -d "$DT - $x11 hours"`","$userId","$npi","$pii","$chpwd >> sampleData.dat
-    #echo `date '+%Y-%m-%d %H:%M:%S' -d "$DT - $x11 hours"`","$userId","$npi","$pii","$chpwd
+    ## 1 out of 50 in normal state and 1 out of 20 in bad state will be 404
+    ## 1 out of 50 in normal state and 1 out of 20 in bad state will be 503
+    ## Rest every thing will be 200
+    if [ $x1 -eq 4 ]; then
+        status_code=404
+    elif [ $x1 -eq 5 ]; then
+        status_code=503
+    else
+        status_code=200
+    fi
 
-  done
-  echo $((userId*100/400))"% completed"
+    x2=`gshuf -i 100-2250 -n 1`
+    if [ $SLOW_FLAG -eq 0 ]; then
+        latency=`echo $(printf %0.3f $(echo "scale=3; $x2/1000" | bc))`
+    else
+        latency=`echo $(printf %0.3f $(echo "scale=3; $x2/1000*5" | bc))`
+        SLEEP_DURATION=0.5
+    fi
+
+
+    # Generate the log file in the format
+    ## time stamp|server|app name|app version|GET|url|status code|latency|referral
+    echo `date`"|"$SERVER_NAME"|"$APP_NAME"|"$APP_VERSION"|GET|http://www.homepage.com/|"$x1"|"$status_code"|"$latency"|referral_url" >> accesslog-$SERVER_NAME-$APP_NAME-$APP_VERSION.log
+
+    echo "..."
+    sleep $SLEEP_DURATION
 done
-
-#Sort the event log based on the time stamp
-cat sampleData.dat | sort > sampleData1.dat
 
