@@ -39,9 +39,9 @@ do
     ## generate random number between 0 and 50 for normal state
     ## generate random number between 1 and 20 for bad state
     if [ $ERR_FLAG -eq 0 ]; then 
-        x1=`gshuf -i 1-50 -n 1`
+        x1=`shuf -i 1-50 -n 1`
     else
-        x1=`gshuf -i 1-20 -n 1`
+        x1=`shuf -i 1-20 -n 1`
     fi
 
     ## 1 out of 50 in normal state and 1 out of 20 in bad state will be 404
@@ -57,7 +57,7 @@ do
 
     # Calculate latency
     ## generate random value between 0.100 seconds and 2.250 seconds for a normal state; times it 5 for bad state
-    x2=`gshuf -i 100-2250 -n 1`
+    x2=`shuf -i 100-2250 -n 1`
     if [ $SLOW_FLAG -eq 0 ]; then
         latency=`echo $(printf %0.3f $(echo "scale=3; $x2/1000" | bc))`
     else

@@ -29,9 +29,9 @@ do
     ## generate random number between 1 and 100 for normal state
     ## generate random number between 1 and 25 for bad state
     if [ $SERVER_FLAG -eq 0 ]; then 
-        x1=`gshuf -i 1-100 -n 1`
+        x1=`shuf -i 1-100 -n 1`
     else
-        x1=`gshuf -i 1-25 -n 1`
+        x1=`shuf -i 1-25 -n 1`
     fi
 
     ## if x1 has a value of 1 or 2, then CRIT
@@ -49,7 +49,7 @@ do
     fi
 
     # Arbitarily generate a 4 digit random number to append to the log message
-    x2=`gshuf -i 1000-9999 -n 1`
+    x2=`shuf -i 1000-9999 -n 1`
 
     # Generate the app log file in the format
     ## time stamp|server|app name|app version|(INFO|WARN|ERROR|CRIT)|log message
