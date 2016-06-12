@@ -55,7 +55,6 @@ do
     ## time stamp|server|app name|app version|(INFO|WARN|ERROR|CRIT)|log message
     echo `date`"|"$SERVER_NAME"|"$APP_NAME"|"$APP_VERSION"|"$msg_type"|log msg "$x2 >> applog-$SERVER_NAME-$APP_NAME-$APP_VERSION.log
 
-    echo "..."
     sleep 0.1
 done
 
