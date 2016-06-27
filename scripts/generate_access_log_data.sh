@@ -14,7 +14,7 @@ APP_NAME=$2
 APP_VERSION=$3
 ERR_FLAG=0
 SLOW_FLAG=0
-SLEEP_DURATION=0.1
+SLEEP_DURATION=0.25
 
 # Ensure the variable 4 is either a 0 or 1; for all other values default it to 0
 temp0=`echo $4 | grep "^-\?[0-1]$"`
@@ -62,13 +62,13 @@ do
         latency=`echo $(printf %0.3f $(echo "scale=3; $x2/1000" | bc))`
     else
         latency=`echo $(printf %0.3f $(echo "scale=3; $x2/1000*5" | bc))`
-        SLEEP_DURATION=0.5
+        SLEEP_DURATION=1
     fi
 
 
     # Generate the access log file in the format
     ## time stamp|server|app name|app version|GET|url|status code|latency|referral
-    echo `date`"|"$SERVER_NAME"|"$APP_NAME"|"$APP_VERSION"|GET|http://www.homepage.com/|"$status_code"|"$latency"|referral_url" >> accesslog-$SERVER_NAME-$APP_NAME-$APP_VERSION.log
+    echo `date`"|"$SERVER_NAME"|"$APP_NAME"|"$APP_VERSION"|GET|http://www.homepage.com/|"$status_code"|"$latency"|referral_url;;" >> accesslog-$SERVER_NAME.log
 
     sleep $SLEEP_DURATION
 done

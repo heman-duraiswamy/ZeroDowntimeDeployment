@@ -53,8 +53,8 @@ do
 
     # Generate the app log file in the format
     ## time stamp|server|app name|app version|(INFO|WARN|ERROR|CRIT)|log message
-    echo `date`"|"$SERVER_NAME"|"$APP_NAME"|"$APP_VERSION"|"$msg_type"|log msg "$x2 >> applog-$SERVER_NAME-$APP_NAME-$APP_VERSION.log
+    echo `date`"|"$SERVER_NAME"|"$APP_NAME"|"$APP_VERSION"|"$msg_type"|log msg "$x2";;" >> applog-$SERVER_NAME.log
 
-    sleep 0.1
+    sleep 0.25
 done
 
